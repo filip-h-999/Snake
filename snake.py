@@ -10,6 +10,7 @@ BLUE = (39, 53, 70)
 GREEN = (8, 212, 69)
 Dark1 = (38, 52, 69)
 Dark2 = (31, 40, 54)
+colorSnake = (33, 214, 219)
 
 blockSize = 30
 rows = 15
@@ -37,6 +38,7 @@ def main():
         drawGameBorder()
         drawGrid()
         drawFood(x, y)
+        snake(int(rows/2), int(columns/2))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -48,9 +50,8 @@ def drawGrid():
     cellCont = 0
     for x in range(0, rows):
         for y in range(0, columns):
-            rect = pygame.Rect(border_left + x * blockSize, border_top + y * blockSize, blockSize, blockSize)
             color = Dark1 if cellCont % 2 else Dark2
-            draw.rect(window, color, rect, 0)
+            drawCell(x, y, color)
             cellCont += 1
 
 
@@ -64,6 +65,15 @@ def drawGameBorder():
     draw.rect(window, WHITE, pygame.Rect(border_left - 5, border_top - 5,
                                          rows * blockSize + 10, columns * blockSize + 10), 3)
 # 1/2 are the left and top and 3/4 are the columns
+
+
+def snake(x, y):
+    drawCell(x, y, colorSnake)
+
+
+def drawCell(x, y, color):
+    rect = pygame.Rect(border_left + x * blockSize, border_top + y * blockSize, blockSize, blockSize)
+    draw.rect(window, color, rect, 0)
 
 
 def drawScore():

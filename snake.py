@@ -1,7 +1,16 @@
 import random
 import sys
+from enum import Enum
 import pygame
 from pygame import draw, display, font
+
+
+class Direction(Enum):
+    up = 1
+    down = 2
+    left = 3
+    right = 4
+
 
 BLACK = (0, 0, 0)
 WHITE = (200, 200, 200)
@@ -23,9 +32,18 @@ WINDOW_HEIGHT = rows * blockSize + (border_bottom + border_top)
 WINDOW_WIDTH = columns * blockSize + (border_left + border_right)
 window: pygame.Surface
 
+snake_position_x = int(rows/2)
+snake_position_y = int(columns/2)
+x_change = 0
+y_change = 0
+
+clock = pygame.time.Clock()
+speed = 3
+
 
 def main():
     global window
+    direction = Direction.up
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Snake")
@@ -38,12 +56,23 @@ def main():
         drawGameBorder()
         drawGrid()
         drawFood(x, y)
-        snake(int(rows/2), int(columns/2))
+        moveSnake(direction)
+        snake()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    direction = Direction.up
+                elif event.key == pygame.K_DOWN:
+                    direction = Direction.down
+                elif event.key == pygame.K_LEFT:
+                    direction = Direction.left
+                elif event.key == pygame.K_RIGHT:
+                    direction = Direction.right
         display.update()
+        clock.tick(speed)
 
 
 def drawGrid():
@@ -67,8 +96,21 @@ def drawGameBorder():
 # 1/2 are the left and top and 3/4 are the columns
 
 
-def snake(x, y):
-    drawCell(x, y, colorSnake)
+def moveSnake(direction):
+    global snake_position_y
+    global snake_position_x
+    if direction == Direction.up:
+        snake_position_y -= 1
+    elif direction == Direction.down:
+        snake_position_y += 1
+    elif direction == Direction.left:
+        snake_position_x -= 1
+    elif direction == Direction.right:
+        snake_position_x += 1
+
+
+def snake():
+    drawCell(snake_position_x, snake_position_y, colorSnake)
 
 
 def drawCell(x, y, color):

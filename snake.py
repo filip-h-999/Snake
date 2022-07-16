@@ -70,12 +70,8 @@ def main():
         drawFood(food_position_x, food_position_y)
         moveSnake(direction)
         snake()
+        eatFood()
         display.update()
-
-        if food_position_x == snake_position_x and food_position_y == snake_position_y:
-            food_position_x = random.randint(0, rows - 1)
-            food_position_y = random.randint(0, rows - 1)
-
         clock.tick(speed)
 
 
@@ -130,6 +126,13 @@ def drawScore():
     window.blit(scoreText, (230, 90))
     window.blit(highScoreText, (390, 90))
     # fist x second y
+
+
+def eatFood():
+    global food_position_y, food_position_x
+    if food_position_x == snake_position_x and food_position_y == snake_position_y:
+        food_position_x = random.randint(0, rows - 1)
+        food_position_y = random.randint(0, rows - 1)
 
 
 main()

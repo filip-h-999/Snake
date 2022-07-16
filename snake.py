@@ -32,6 +32,7 @@ food_position_y = random.randint(0, rows - 1)
 
 clock = pygame.time.Clock()
 speed = 7
+score = 0
 
 
 class Direction(Enum):
@@ -47,8 +48,6 @@ def main():
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Snake")
-    window.fill(BLUE)
-    drawScore()
 
     while True:
         for event in pygame.event.get():
@@ -65,11 +64,14 @@ def main():
                 elif event.key == pygame.K_RIGHT:
                     direction = Direction.right
 
+        window.fill(BLUE)
+        drawScore()
         drawGameBorder()
         drawGrid()
         drawFood(food_position_x, food_position_y)
         moveSnake(direction)
         snake()
+        changeScore()
         eatFood()
         display.update()
         clock.tick(speed)
@@ -119,11 +121,8 @@ def drawCell(x, y, color):
 
 
 def drawScore():
-    font1 = font.SysFont('Arial.ttf', 30)
-    scoreText = font1.render("Score: 0", True, GREEN)
     font2 = font.SysFont('didot.ttc', 30)
-    highScoreText = font2.render("High Score: 0", True, GREEN)
-    window.blit(scoreText, (230, 90))
+    highScoreText = font2.render("High Score: ", True, GREEN)
     window.blit(highScoreText, (390, 90))
     # fist x second y
 
@@ -133,6 +132,17 @@ def eatFood():
     if food_position_x == snake_position_x and food_position_y == snake_position_y:
         food_position_x = random.randint(0, rows - 1)
         food_position_y = random.randint(0, rows - 1)
+
+
+def changeScore():
+    global score
+    if food_position_x == snake_position_x and food_position_y == snake_position_y:
+        score += 1
+        print(score)
+    font1 = font.SysFont('didot.ttc', 30)
+    scoreText = font1.render("Score: %d" % score, True, GREEN)
+    window.blit(scoreText, (230, 90))
+    # fist x second y
 
 
 main()

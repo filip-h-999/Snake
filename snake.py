@@ -25,13 +25,13 @@ WINDOW_HEIGHT = rows * blockSize + (border_bottom + border_top)
 WINDOW_WIDTH = columns * blockSize + (border_left + border_right)
 window: pygame.Surface
 
+speed = 7
 snake_position_x = int(rows/2)
 snake_position_y = int(columns/2)
 food_position_x = random.randint(0, rows - 1)
 food_position_y = random.randint(0, rows - 1)
 
 clock = pygame.time.Clock()
-speed = 7
 score = 0
 
 
@@ -73,6 +73,7 @@ def main():
         snake()
         changeScore()
         eatFood()
+        dead()
         display.update()
         clock.tick(speed)
 
@@ -138,11 +139,21 @@ def changeScore():
     global score
     if food_position_x == snake_position_x and food_position_y == snake_position_y:
         score += 1
-        print(score)
     font1 = font.SysFont('didot.ttc', 30)
     scoreText = font1.render("Score: %d" % score, True, GREEN)
     window.blit(scoreText, (230, 90))
     # fist x second y
+
+
+def dead():
+    if snake_position_x > 16:
+        pygame.quit()
+    if snake_position_x < 0:
+        pygame.quit()
+    if snake_position_y > 16:
+        pygame.quit()
+    if snake_position_y < 0:
+        pygame.quit()
 
 
 main()

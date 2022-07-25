@@ -12,6 +12,7 @@ GREEN = (8, 212, 69)
 Dark1 = (38, 52, 69)
 Dark2 = (31, 40, 54)
 colorSnake = (33, 214, 219)
+GOLD = (252, 235, 85)
 
 blockSize = 30
 rows = 17
@@ -176,10 +177,13 @@ def gameOverScreen():
     window.blit(pygame.transform.scale(image, (WINDOW_WIDTH, 465)), (0, 0))
     font4 = font.SysFont('didot.ttc', 35)
     playAgain = font4.render("To play again press: c", True, GREEN)
-    window.blit(playAgain, (230, 480))
+    window.blit(playAgain, (250, 480))
     font5 = font.SysFont('didot.ttc', 35)
     quitGame = font5.render("To end the Game press: n", True, RED)
     window.blit(quitGame, (230, 530))
+    fontEndScore = font.SysFont('didot.ttc', 50)
+    endScore = fontEndScore.render("Score: %d" % score, True, GOLD)
+    window.blit(endScore, (310, 580))
 
 
 main()

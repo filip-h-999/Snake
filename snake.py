@@ -4,7 +4,6 @@ from enum import Enum
 import pygame
 from pygame import draw, display, font
 
-
 BLACK = (0, 0, 0)
 WHITE = (200, 200, 200)
 RED = (255, 0, 0)
@@ -26,13 +25,15 @@ WINDOW_WIDTH = columns * blockSize + (border_left + border_right)
 window: pygame.Surface
 
 speed = 7
-snake_position_x = int(rows/2)
-snake_position_y = int(columns/2)
+snake_position_x = int(rows / 2)
+snake_position_y = int(columns / 2)
 food_position_x = random.randint(0, rows - 1)
 food_position_y = random.randint(0, rows - 1)
 
 clock = pygame.time.Clock()
 score = 0
+
+running = True
 
 
 class Direction(Enum):
@@ -43,16 +44,17 @@ class Direction(Enum):
 
 
 def main():
-    global window, food_position_x, food_position_y
+    global window, food_position_x, food_position_y, running
     direction = Direction.up
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Snake")
 
-    while True:
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                # pygame.quit()
+                running = False
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
@@ -63,6 +65,11 @@ def main():
                     direction = Direction.left
                 elif event.key == pygame.K_RIGHT:
                     direction = Direction.right
+                if event.key == pygame.K_c:
+                    reset()
+                elif event.key == pygame.K_n:
+                    # pygame.quit()
+                    running = False
 
         window.fill(BLUE)
         drawScore()
@@ -74,6 +81,7 @@ def main():
         changeScore()
         eatFood()
         dead()
+
         display.update()
         clock.tick(speed)
 
@@ -90,18 +98,21 @@ def drawGrid():
 def drawFood(x, y):
     draw.circle(window, RED, [border_left + x * blockSize + blockSize / 2,
                               border_top + y * blockSize + blockSize / 2], 12, 0)
+
+
 # 1/2 Int are the position / 3. ist the size and 4. filling
 
 
 def drawGameBorder():
     draw.rect(window, WHITE, pygame.Rect(border_left - 5, border_top - 5,
                                          rows * blockSize + 10, columns * blockSize + 10), 3)
+
+
 # 1/2 are the left and top and 3/4 are the columns
 
 
 def moveSnake(direction):
-    global snake_position_y
-    global snake_position_x
+    global snake_position_y, snake_position_x
     if direction == Direction.up:
         snake_position_y -= 1
     elif direction == Direction.down:
@@ -146,14 +157,29 @@ def changeScore():
 
 
 def dead():
-    if snake_position_x > 16:
-        pygame.quit()
-    if snake_position_x < 0:
-        pygame.quit()
-    if snake_position_y > 16:
-        pygame.quit()
-    if snake_position_y < 0:
-        pygame.quit()
+    if snake_position_x > 16 or snake_position_x < 0 or snake_position_y > 16 or snake_position_y < 0:
+        gameOverScreen()
+
+
+def reset():
+    global snake_position_x, snake_position_y, score, food_position_x, food_position_y
+    snake_position_x = int(rows / 2)
+    snake_position_y = int(columns / 2)
+    food_position_x = random.randint(0, rows - 1)
+    food_position_y = random.randint(0, rows - 1)
+    score = 0
+
+
+def gameOverScreen():
+    window.fill(BLACK)
+    image = pygame.image.load(r'C:\Users\filip\Downloads\BackGO.jpg')
+    window.blit(pygame.transform.scale(image, (WINDOW_WIDTH, 465)), (0, 0))
+    font4 = font.SysFont('didot.ttc', 35)
+    playAgain = font4.render("To play again press: c", True, GREEN)
+    window.blit(playAgain, (230, 480))
+    font5 = font.SysFont('didot.ttc', 35)
+    quitGame = font5.render("To end the Game press: n", True, RED)
+    window.blit(quitGame, (230, 530))
 
 
 main()

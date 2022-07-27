@@ -35,6 +35,8 @@ clock = pygame.time.Clock()
 score = 0
 
 running = True
+isAlive = True
+isPaused = False
 
 
 class Direction(Enum):
@@ -44,9 +46,11 @@ class Direction(Enum):
     right = 4
 
 
+direction = Direction.up
+
+
 def main():
-    global window, food_position_x, food_position_y, running
-    direction = Direction.up
+    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Snake")
@@ -54,7 +58,6 @@ def main():
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # pygame.quit()
                 running = False
                 sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -67,22 +70,31 @@ def main():
                 elif event.key == pygame.K_RIGHT:
                     direction = Direction.right
                 if event.key == pygame.K_c:
+                    isAlive = True
                     reset()
                 elif event.key == pygame.K_n:
-                    # pygame.quit()
                     running = False
+                if event.key == pygame.K_p:
+                    isPaused = not isPaused
 
-        window.fill(BLUE)
-        drawScore()
-        drawGameBorder()
-        drawGrid()
-        drawFood(food_position_x, food_position_y)
-        moveSnake(direction)
-        snake()
-        changeScore()
-        eatFood()
-        dead()
+        if not isPaused:
+            moveSnake(direction)
 
+        if snake_position_x > 16 or snake_position_x < 0 or snake_position_y > 16 or snake_position_y < 0:
+            isAlive = False
+
+        if isAlive:
+            window.fill(BLUE)
+            drawScore()
+            drawGameBorder()
+            drawGrid()
+            drawFood(food_position_x, food_position_y)
+            snakeHead()
+            changeScore()
+            eatFood()
+
+        else:
+            gameOverScreen()
         display.update()
         clock.tick(speed)
 
@@ -97,34 +109,30 @@ def drawGrid():
 
 
 def drawFood(x, y):
-    draw.circle(window, RED, [border_left + x * blockSize + blockSize / 2,
-                              border_top + y * blockSize + blockSize / 2], 12, 0)
-
-
-# 1/2 Int are the position / 3. ist the size and 4. filling
+    apple = pygame.image.load(r"C:\Users\filip\Downloads\tumblr_mrcf12B0fE1rfjowdo1_500.gif")
+    window.blit(pygame.transform.scale(apple, (30, 30)), ([border_left + x * blockSize + 1,
+                                                           border_top + y * blockSize + 1]))
 
 
 def drawGameBorder():
     draw.rect(window, WHITE, pygame.Rect(border_left - 5, border_top - 5,
                                          rows * blockSize + 10, columns * blockSize + 10), 3)
-
-
 # 1/2 are the left and top and 3/4 are the columns
 
 
-def moveSnake(direction):
+def moveSnake(dire):
     global snake_position_y, snake_position_x
-    if direction == Direction.up:
+    if dire == Direction.up:
         snake_position_y -= 1
-    elif direction == Direction.down:
+    elif dire == Direction.down:
         snake_position_y += 1
-    elif direction == Direction.left:
+    elif dire == Direction.left:
         snake_position_x -= 1
-    elif direction == Direction.right:
+    elif dire == Direction.right:
         snake_position_x += 1
 
 
-def snake():
+def snakeHead():
     drawCell(snake_position_x, snake_position_y, colorSnake)
 
 
@@ -157,18 +165,14 @@ def changeScore():
     # fist x second y
 
 
-def dead():
-    if snake_position_x > 16 or snake_position_x < 0 or snake_position_y > 16 or snake_position_y < 0:
-        gameOverScreen()
-
-
 def reset():
-    global snake_position_x, snake_position_y, score, food_position_x, food_position_y
+    global snake_position_x, snake_position_y, score, food_position_x, food_position_y, direction
     snake_position_x = int(rows / 2)
     snake_position_y = int(columns / 2)
     food_position_x = random.randint(0, rows - 1)
     food_position_y = random.randint(0, rows - 1)
     score = 0
+    direction = Direction.up
 
 
 def gameOverScreen():

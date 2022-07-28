@@ -48,14 +48,12 @@ def playEat():
 
 def playDead():
     dead = r"C:\Users\filip\Downloads\dead.mp3"
-    mixer.music.load(dead)
-    mixer.music.play()
+    pygame.mixer.Channel(0).play(pygame.mixer.Sound(dead), maxtime=3000)
 
 
 def playGameOver():
     gameOver = r"C:\Users\filip\Downloads\game Over.mp3"
-    mixer.music.play()
-    pygame.mixer.Channel(0).play(pygame.mixer.Sound(gameOver), maxtime=3000)
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound(gameOver), maxtime=3000)
 
 
 class Direction(Enum):
@@ -99,10 +97,12 @@ def main():
         if not isPaused:
             moveSnake(direction)
 
-        if snake_position_x == 17 or snake_position_x == -1 or snake_position_y == 17 or snake_position_y == -1:
+        if isAlive and (snake_position_x == 17 or snake_position_x == -1 or
+                        snake_position_y == 17 or snake_position_y == -1):
             isAlive = False
             playDead()
             playGameOver()
+            gameOverScreen()
 
         if isAlive:
             window.fill(BLUE)
@@ -114,8 +114,6 @@ def main():
             changeScore()
             eatFood()
 
-        else:
-            gameOverScreen()
         display.update()
         clock.tick(speed)
 

@@ -2,7 +2,7 @@ import random
 import sys
 from enum import Enum
 import pygame
-from pygame import draw, display, font
+from pygame import draw, display, font, mixer
 
 BLACK = (0, 0, 0)
 WHITE = (200, 200, 200)
@@ -31,12 +31,31 @@ snake_position_y = int(columns / 2)
 food_position_x = random.randint(0, rows - 1)
 food_position_y = random.randint(0, rows - 1)
 
+mixer.init()
 clock = pygame.time.Clock()
 score = 0
 
 running = True
 isAlive = True
 isPaused = False
+
+
+def playEat():
+    eat = r"C:\Users\filip\Downloads\apple.mp3"
+    mixer.music.load(eat)
+    mixer.music.play()
+
+
+def playDead():
+    dead = r"C:\Users\filip\Downloads\dead.mp3"
+    mixer.music.load(dead)
+    mixer.music.play()
+
+
+def playGameOver():
+    gameOver = r"C:\Users\filip\Downloads\game Over.mp3"
+    mixer.music.play()
+    pygame.mixer.Channel(0).play(pygame.mixer.Sound(gameOver), maxtime=3000)
 
 
 class Direction(Enum):
@@ -80,8 +99,10 @@ def main():
         if not isPaused:
             moveSnake(direction)
 
-        if snake_position_x > 16 or snake_position_x < 0 or snake_position_y > 16 or snake_position_y < 0:
+        if snake_position_x == 17 or snake_position_x == -1 or snake_position_y == 17 or snake_position_y == -1:
             isAlive = False
+            playDead()
+            playGameOver()
 
         if isAlive:
             window.fill(BLUE)
@@ -153,6 +174,7 @@ def eatFood():
     if food_position_x == snake_position_x and food_position_y == snake_position_y:
         food_position_x = random.randint(0, rows - 1)
         food_position_y = random.randint(0, rows - 1)
+        playEat()
 
 
 def changeScore():

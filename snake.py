@@ -34,7 +34,7 @@ food_position_y = random.randint(0, rows - 1)
 mixer.init()
 clock = pygame.time.Clock()
 score = 0
-higScore = 20
+higScore = 30
 
 body = [(snake_position_x, snake_position_y),
         (snake_position_x, snake_position_y + 1)]
@@ -189,10 +189,18 @@ def drawScore():
 def eatFood():
     global food_position_y, food_position_x
     if food_position_x == snake_position_x and food_position_y == snake_position_y:
-        food_position_x = random.randint(0, rows - 1)
-        food_position_y = random.randint(0, rows - 1)
+        checkFood()
         playEat()
         return True
+
+
+def checkFood():
+    global food_position_y, food_position_x
+    while True:
+        food_position_x = random.randint(0, rows - 1)
+        food_position_y = random.randint(0, rows - 1)
+        if not (food_position_x, food_position_y) in body:
+            break
 
 
 def changeScore():

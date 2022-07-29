@@ -34,6 +34,7 @@ food_position_y = random.randint(0, rows - 1)
 mixer.init()
 clock = pygame.time.Clock()
 score = 0
+higScore = 20
 
 body = [(snake_position_x, snake_position_y),
         (snake_position_x, snake_position_y + 1)]
@@ -70,7 +71,7 @@ direction = Direction.up
 
 
 def main():
-    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused
+    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused, higScore
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Snake")
@@ -101,14 +102,17 @@ def main():
             moveSnake(direction)
             body.insert(0, (snake_position_x, snake_position_y))
 
-        if isAlive and (snake_position_x == 17 or snake_position_x == -1 or
-                        snake_position_y == 17 or snake_position_y == -1):
+        if isAlive and (snake_position_x == 17 or
+                        snake_position_x == -1 or
+                        snake_position_y == 17 or
+                        snake_position_y == -1 or
+                        collision()):
             isAlive = False
             playDead()
             playGameOver()
             gameOverScreen()
 
-        if isAlive:
+        if isAlive and not isPaused:
             window.fill(BLUE)
             drawScore()
             drawGameBorder()
@@ -116,6 +120,8 @@ def main():
             drawFood(food_position_x, food_position_y)
             drawBody(body)
             changeScore()
+            if higScore < score:
+                higScore += 1
             if not eatFood():
                 body.pop()
 
@@ -141,8 +147,6 @@ def drawFood(x, y):
 def drawGameBorder():
     draw.rect(window, WHITE, pygame.Rect(border_left - 5, border_top - 5,
                                          rows * blockSize + 10, columns * blockSize + 10), 3)
-
-
 # 1/2 are the left and top and 3/4 are the columns
 
 
@@ -163,6 +167,13 @@ def drawBody(body):
         drawCell(segment[0], segment[1], colorSnake)
 
 
+def collision():
+    snakeHead = body[0]
+    snakeBody = body[1:]
+    if snakeHead in snakeBody:
+        return True
+
+
 def drawCell(x, y, color):
     rect = pygame.Rect(border_left + x * blockSize, border_top + y * blockSize, blockSize, blockSize)
     draw.rect(window, color, rect, 0)
@@ -170,7 +181,7 @@ def drawCell(x, y, color):
 
 def drawScore():
     font2 = font.SysFont('didot.ttc', 30)
-    highScoreText = font2.render("High Score: ", True, GREEN)
+    highScoreText = font2.render("High Score: %d" % higScore, True, GREEN)
     window.blit(highScoreText, (390, 90))
     # fist x second y
 
@@ -195,11 +206,13 @@ def changeScore():
 
 
 def reset():
-    global snake_position_x, snake_position_y, score, food_position_x, food_position_y, direction
+    global snake_position_x, snake_position_y, score, food_position_x, food_position_y, direction, body
     snake_position_x = int(rows / 2)
     snake_position_y = int(columns / 2)
     food_position_x = random.randint(0, rows - 1)
     food_position_y = random.randint(0, rows - 1)
+    body = [(snake_position_x, snake_position_y),
+            (snake_position_x, snake_position_y + 1)]
     score = 0
     direction = Direction.up
 

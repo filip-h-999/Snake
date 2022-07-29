@@ -34,7 +34,7 @@ food_position_y = random.randint(0, rows - 1)
 mixer.init()
 clock = pygame.time.Clock()
 score = 0
-higScore = 30
+higScore = 37
 
 body = [(snake_position_x, snake_position_y),
         (snake_position_x, snake_position_y + 1)]
@@ -118,7 +118,7 @@ def main():
             drawGameBorder()
             drawGrid()
             drawFood(food_position_x, food_position_y)
-            drawBody(body)
+            drawSnake()
             changeScore()
             if higScore < score:
                 higScore += 1
@@ -162,9 +162,11 @@ def moveSnake(dire):
         snake_position_x += 1
 
 
-def drawBody(body):
+def drawSnake():
+    snakeHead = body[0]
     for segment in body:
-        drawCell(segment[0], segment[1], colorSnake)
+        color = GOLD if snakeHead == segment else colorSnake
+        drawCell(segment[0], segment[1], color)
 
 
 def collision():

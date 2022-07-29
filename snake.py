@@ -35,6 +35,9 @@ mixer.init()
 clock = pygame.time.Clock()
 score = 0
 
+body = [(snake_position_x, snake_position_y),
+        (snake_position_x, snake_position_y + 1)]
+
 running = True
 isAlive = True
 isPaused = False
@@ -96,6 +99,7 @@ def main():
 
         if not isPaused:
             moveSnake(direction)
+            body.insert(0, (snake_position_x, snake_position_y))
 
         if isAlive and (snake_position_x == 17 or snake_position_x == -1 or
                         snake_position_y == 17 or snake_position_y == -1):
@@ -110,9 +114,10 @@ def main():
             drawGameBorder()
             drawGrid()
             drawFood(food_position_x, food_position_y)
-            snakeHead()
+            drawBody(body)
             changeScore()
-            eatFood()
+            if not eatFood():
+                body.pop()
 
         display.update()
         clock.tick(speed)
@@ -136,6 +141,8 @@ def drawFood(x, y):
 def drawGameBorder():
     draw.rect(window, WHITE, pygame.Rect(border_left - 5, border_top - 5,
                                          rows * blockSize + 10, columns * blockSize + 10), 3)
+
+
 # 1/2 are the left and top and 3/4 are the columns
 
 
@@ -151,8 +158,9 @@ def moveSnake(dire):
         snake_position_x += 1
 
 
-def snakeHead():
-    drawCell(snake_position_x, snake_position_y, colorSnake)
+def drawBody(body):
+    for segment in body:
+        drawCell(segment[0], segment[1], colorSnake)
 
 
 def drawCell(x, y, color):
@@ -173,6 +181,7 @@ def eatFood():
         food_position_x = random.randint(0, rows - 1)
         food_position_y = random.randint(0, rows - 1)
         playEat()
+        return True
 
 
 def changeScore():

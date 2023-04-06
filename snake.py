@@ -34,7 +34,7 @@ food_position_y = random.randint(0, rows - 1)
 mixer.init()
 clock = pygame.time.Clock()
 score = 0
-higScore = 37
+higScore = 54
 
 body = [(snake_position_x, snake_position_y),
         (snake_position_x, snake_position_y + 1)]
@@ -45,18 +45,18 @@ isPaused = False
 
 
 def playEat():
-    eat = r"C:\Users\filip\Downloads\apple.mp3"
+    eat = r"resources\sound\apple.mp3"
     mixer.music.load(eat)
     mixer.music.play()
 
 
 def playDead():
-    dead = r"C:\Users\filip\Downloads\dead.mp3"
+    dead = r"resources\sound\dead.mp3"
     pygame.mixer.Channel(0).play(pygame.mixer.Sound(dead), maxtime=3000)
 
 
 def playGameOver():
-    gameOver = r"C:\Users\filip\Downloads\game Over.mp3"
+    gameOver = r"resources\sound\game Over.mp3"
     pygame.mixer.Channel(1).play(pygame.mixer.Sound(gameOver), maxtime=3000)
 
 
@@ -139,7 +139,7 @@ def drawGrid():
 
 
 def drawFood(x, y):
-    apple = pygame.image.load(r"C:\Users\filip\Downloads\tumblr_mrcf12B0fE1rfjowdo1_500.gif")
+    apple = pygame.image.load(r"resources\img\apple.gif")
     window.blit(pygame.transform.scale(apple, (30, 30)), ([border_left + x * blockSize + 1,
                                                            border_top + y * blockSize + 1]))
 
@@ -229,7 +229,7 @@ def reset():
 
 def gameOverScreen():
     window.fill(BLACK)
-    image = pygame.image.load(r'C:\Users\filip\Downloads\BackGO.jpg')
+    image = pygame.image.load(r'resources\img\BackGO.jpg')
     window.blit(pygame.transform.scale(image, (WINDOW_WIDTH, 465)), (0, 0))
     font4 = font.SysFont('didot.ttc', 35)
     playAgain = font4.render("To play again press: c", True, GREEN)

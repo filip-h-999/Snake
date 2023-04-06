@@ -34,7 +34,10 @@ food_position_y = random.randint(0, rows - 1)
 mixer.init()
 clock = pygame.time.Clock()
 score = 0
-higScore = 54
+highscore = 1
+
+with open("highscore.txt", "r") as file:
+    highscore = int(file.read())
 
 body = [(snake_position_x, snake_position_y),
         (snake_position_x, snake_position_y + 1)]
@@ -71,7 +74,7 @@ direction = Direction.up
 
 
 def main():
-    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused, higScore
+    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused, highscore
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Snake")
@@ -120,8 +123,10 @@ def main():
             drawFood(food_position_x, food_position_y)
             drawSnake()
             changeScore()
-            if higScore < score:
-                higScore += 1
+            if highscore < score:
+                highscore += 1
+                with open("highscore.txt", "w") as file:
+                    file.write(str(highscore))
             if not eatFood():
                 body.pop()
 
@@ -183,7 +188,7 @@ def drawCell(x, y, color):
 
 def drawScore():
     font2 = font.SysFont('didot.ttc', 30)
-    highScoreText = font2.render("High Score: %d" % higScore, True, GREEN)
+    highScoreText = font2.render("High Score: %d" % highscore, True, GREEN)
     window.blit(highScoreText, (390, 90))
     # fist x second y
 

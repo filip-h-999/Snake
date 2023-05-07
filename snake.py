@@ -2,7 +2,7 @@ import random
 import sys
 from enum import Enum
 import pygame
-from pygame import draw, display, font, mixer
+from pygame import draw, display, font, mixer, image
 
 BLACK = (0, 0, 0)
 WHITE = (200, 200, 200)
@@ -34,7 +34,7 @@ food_position_y = random.randint(0, rows - 1)
 mixer.init()
 clock = pygame.time.Clock()
 score = 0
-highscore = 1
+highscore = int
 
 with open("highscore.txt", "r") as file:
     highscore = int(file.read())
@@ -45,6 +45,9 @@ body = [(snake_position_x, snake_position_y),
 running = True
 isAlive = True
 isPaused = False
+gameStarted = False
+
+start_screen = pygame.transform.scale(image.load(r"resources\img\titleScreen.jpg"), (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 
 def playEat():
@@ -63,6 +66,20 @@ def playGameOver():
     pygame.mixer.Channel(1).play(pygame.mixer.Sound(gameOver), maxtime=3000)
 
 
+def palyStartSound():
+    play = r"resources\sound\startSound.wav"
+    mixer.music.load(play)
+    mixer.music.play()
+    mixer.music.set_volume(0.5)
+
+
+def playMoveSound():
+    move = r"resources\sound\move.wav"
+    mixer.music.load(move)
+    pygame.mixer.Channel(3).play(pygame.mixer.Sound(move), maxtime=800)
+    pygame.mixer.Channel(3).set_volume(0.2)
+
+
 class Direction(Enum):
     up = 1
     down = 2
@@ -74,7 +91,7 @@ direction = Direction.up
 
 
 def main():
-    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused, highscore
+    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused, highscore, gameStarted
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Snake")
@@ -87,21 +104,30 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     direction = Direction.up
+                    playMoveSound()
                 elif event.key == pygame.K_DOWN:
                     direction = Direction.down
+                    playMoveSound()
                 elif event.key == pygame.K_LEFT:
                     direction = Direction.left
+                    playMoveSound()
                 elif event.key == pygame.K_RIGHT:
                     direction = Direction.right
+                    playMoveSound()
                 if event.key == pygame.K_c:
                     isAlive = True
+                    palyStartSound()
                     reset()
+                    gameStarted = True
                 elif event.key == pygame.K_n:
                     running = False
                 if event.key == pygame.K_p:
                     isPaused = not isPaused
 
-        if not isPaused:
+        if not gameStarted:
+            window.blit(start_screen, (0, 0))
+
+        if not isPaused and gameStarted:
             moveSnake(direction)
             body.insert(0, (snake_position_x, snake_position_y))
 
@@ -115,7 +141,7 @@ def main():
             playGameOver()
             gameOverScreen()
 
-        if isAlive and not isPaused:
+        if isAlive and not isPaused and gameStarted:
             window.fill(BLUE)
             drawScore()
             drawGameBorder()
@@ -221,7 +247,7 @@ def changeScore():
 
 
 def reset():
-    global snake_position_x, snake_position_y, score, food_position_x, food_position_y, direction, body
+    global snake_position_x, snake_position_y, score, food_position_x, food_position_y, direction, body, isPaused
     snake_position_x = int(rows / 2)
     snake_position_y = int(columns / 2)
     food_position_x = random.randint(0, rows - 1)
@@ -229,6 +255,7 @@ def reset():
     body = [(snake_position_x, snake_position_y),
             (snake_position_x, snake_position_y + 1)]
     score = 0
+    isPaused = False
     direction = Direction.up
 
 

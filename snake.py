@@ -4,15 +4,16 @@ from enum import Enum
 import pygame
 from pygame import draw, display, font, mixer, image
 
-BLACK = (0, 0, 0)
-WHITE = (200, 200, 200)
-RED = (255, 0, 0)
-BLUE = (39, 53, 70)
-GREEN = (8, 212, 69)
-Dark1 = (38, 52, 69)
-Dark2 = (31, 40, 54)
-colorSnake = (33, 214, 219)
-GOLD = (252, 235, 85)
+BLACK = ("#000000")
+WHITE = ("#c8c8c8")
+RED = ("#ff0000")
+BLUE = ("#273546")
+GREEN = ("#08d445")
+Dark1 = ("#263445")
+Dark2 = ("#1f2836")
+colorSnake = ("#21d6db")
+GOLD = ("#fceb55")
+ORANGE = ("#f79503")
 
 blockSize = 30
 rows = 17
@@ -50,6 +51,44 @@ gameStarted = False
 start_screen = pygame.transform.scale(image.load(r"resources\img\titleScreen.jpg"), (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 
+class MoveSounds:
+    def playMoveUpSound():
+        moveUp = r"resources\sound\moveU.wav"
+        mixer.music.load(moveUp)
+        pygame.mixer.Channel(4).play(pygame.mixer.Sound(moveUp))
+        pygame.mixer.Channel(4).set_volume(0.2)
+
+        if not isAlive or isPaused or not gameStarted:
+            pygame.mixer.Channel(4).stop()
+
+    def playMoveDownSound():
+        moveDown = r"resources\sound\moveD.wav"
+        mixer.music.load(moveDown)
+        pygame.mixer.Channel(5).play(pygame.mixer.Sound(moveDown))
+        pygame.mixer.Channel(5).set_volume(0.2)
+
+        if not isAlive or isPaused or not gameStarted:
+            pygame.mixer.Channel(5).stop()
+
+    def playMoveLeftSound():
+        moveLeft = r"resources\sound\moveL.wav"
+        mixer.music.load(moveLeft)
+        pygame.mixer.Channel(6).play(pygame.mixer.Sound(moveLeft))
+        pygame.mixer.Channel(6).set_volume(0.2)
+        
+        if not isAlive or isPaused or not gameStarted:
+            pygame.mixer.Channel(6).stop()
+
+    def playMoveRightSound():
+        moveRight = r"resources\sound\moveR.wav"
+        mixer.music.load(moveRight)
+        pygame.mixer.Channel(7).play(pygame.mixer.Sound(moveRight))
+        pygame.mixer.Channel(7).set_volume(0.2)
+
+        if not isAlive or isPaused or not gameStarted:
+            pygame.mixer.Channel(7).stop()
+
+
 def playEat():
     eat = r"resources\sound\apple.mp3"
     mixer.music.load(eat)
@@ -73,11 +112,19 @@ def palyStartSound():
     mixer.music.set_volume(0.5)
 
 
-def playMoveSound():
-    move = r"resources\sound\move.wav"
+def playButtonSound():
+    move = r"resources\sound\button.wav"
     mixer.music.load(move)
-    pygame.mixer.Channel(3).play(pygame.mixer.Sound(move), maxtime=800)
-    pygame.mixer.Channel(3).set_volume(0.2)
+    pygame.mixer.Channel(2).play(pygame.mixer.Sound(move), maxtime=800)
+    pygame.mixer.Channel(2).set_volume(0.2)
+
+
+def playHighscoreSound():
+    highscore = r""
+    mixer.music.load(highscore)
+    pygame.mixer.Channel(3).play(pygame.mixer.Sound(highscore))
+
+# todo new highscore sound
 
 
 class Direction(Enum):
@@ -104,19 +151,19 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     direction = Direction.up
-                    playMoveSound()
+                    MoveSounds.playMoveUpSound()
                 elif event.key == pygame.K_DOWN:
                     direction = Direction.down
-                    playMoveSound()
+                    MoveSounds.playMoveDownSound()
                 elif event.key == pygame.K_LEFT:
                     direction = Direction.left
-                    playMoveSound()
+                    MoveSounds.playMoveLeftSound()
                 elif event.key == pygame.K_RIGHT:
                     direction = Direction.right
-                    playMoveSound()
+                    MoveSounds.playMoveRightSound()
                 if event.key == pygame.K_c:
                     isAlive = True
-                    palyStartSound()
+                    playButtonSound()
                     reset()
                     gameStarted = True
                 elif event.key == pygame.K_n:
@@ -213,9 +260,19 @@ def drawCell(x, y, color):
 
 
 def drawScore():
-    font2 = font.SysFont('didot.ttc', 30)
-    highScoreText = font2.render("High Score: %d" % highscore, True, GREEN)
-    window.blit(highScoreText, (390, 90))
+    font2 = font.SysFont('didot.ttc', 50)
+    highScoreText = font2.render("High Score: %d" % highscore, True, ORANGE)
+    window.blit(highScoreText, (375, 75))
+    # fist x second y
+
+
+def changeScore():
+    global score
+    if food_position_x == snake_position_x and food_position_y == snake_position_y:
+        score += 1
+    font1 = font.SysFont('didot.ttc', 50)
+    scoreText = font1.render("Score: %d" % score, True, GREEN)
+    window.blit(scoreText, (140, 75))
     # fist x second y
 
 
@@ -234,16 +291,6 @@ def checkFood():
         food_position_y = random.randint(0, rows - 1)
         if not (food_position_x, food_position_y) in body:
             break
-
-
-def changeScore():
-    global score
-    if food_position_x == snake_position_x and food_position_y == snake_position_y:
-        score += 1
-    font1 = font.SysFont('didot.ttc', 30)
-    scoreText = font1.render("Score: %d" % score, True, GREEN)
-    window.blit(scoreText, (230, 90))
-    # fist x second y
 
 
 def reset():

@@ -5,7 +5,8 @@ import pygame
 from pygame import draw, display, font, mixer, image
 
 BLACK = ("#000000")
-WHITE = ("#c8c8c8")
+WHITE = ("#ffffff")
+GRAY = ("#c8c8c8")
 RED = ("#ff0000")
 BLUE = ("#273546")
 GREEN = ("#08d445")
@@ -18,8 +19,8 @@ ORANGE = ("#f79503")
 blockSize = 30
 rows = 17
 columns = 17
-border_top = 120
-border_bottom = 50
+border_top = 100
+border_bottom = 80
 border_left = 120
 border_right = 120
 WINDOW_HEIGHT = rows * blockSize + (border_bottom + border_top)
@@ -53,41 +54,25 @@ start_screen = pygame.transform.scale(image.load(r"resources\img\titleScreen.jpg
 
 
 class MoveSounds:
-    def playMoveUpSound():
-        moveUp = r"resources\sound\moveU.wav"
-        mixer.music.load(moveUp)
-        pygame.mixer.Channel(4).play(pygame.mixer.Sound(moveUp))
-        pygame.mixer.Channel(4).set_volume(0.2)
-
-        if not isAlive or isPaused or not gameStarted:
-            pygame.mixer.Channel(4).stop()
-
-    def playMoveDownSound():
-        moveDown = r"resources\sound\moveD.wav"
-        mixer.music.load(moveDown)
-        pygame.mixer.Channel(5).play(pygame.mixer.Sound(moveDown))
-        pygame.mixer.Channel(5).set_volume(0.2)
-
-        if not isAlive or isPaused or not gameStarted:
-            pygame.mixer.Channel(5).stop()
-
-    def playMoveLeftSound():
-        moveLeft = r"resources\sound\moveL.wav"
-        mixer.music.load(moveLeft)
-        pygame.mixer.Channel(6).play(pygame.mixer.Sound(moveLeft))
-        pygame.mixer.Channel(6).set_volume(0.2)
+    def playMoveSound(soundFile, channel):
+        sound = pygame.mixer.Sound(soundFile)
+        pygame.mixer.Channel(channel).play(sound)
+        pygame.mixer.Channel(channel).set_volume(0.2)
         
         if not isAlive or isPaused or not gameStarted:
-            pygame.mixer.Channel(6).stop()
+            pygame.mixer.Channel(channel).stop()
+
+    def playMoveUpSound():
+        MoveSounds.playMoveSound(r"resources\sound\moveU.wav", 4)
+
+    def playMoveDownSound():
+        MoveSounds.playMoveSound(r"resources\sound\moveD.wav", 5)
+
+    def playMoveLeftSound():
+        MoveSounds.playMoveSound(r"resources\sound\moveL.wav", 6)
 
     def playMoveRightSound():
-        moveRight = r"resources\sound\moveR.wav"
-        mixer.music.load(moveRight)
-        pygame.mixer.Channel(7).play(pygame.mixer.Sound(moveRight))
-        pygame.mixer.Channel(7).set_volume(0.2)
-
-        if not isAlive or isPaused or not gameStarted:
-            pygame.mixer.Channel(7).stop()
+        MoveSounds.playMoveSound(r"resources\sound\moveR.wav", 7)
 
 
 def playEat():
@@ -194,6 +179,7 @@ def main():
             drawFood(food_position_x, food_position_y)
             drawSnake()
             changeScore()
+            drawKeys()
 
             if highscore < score:
                 if not newHighScore:
@@ -227,7 +213,7 @@ def drawFood(x, y):
 
 
 def drawGameBorder():
-    draw.rect(window, WHITE, pygame.Rect(border_left - 5, border_top - 5,
+    draw.rect(window, GRAY, pygame.Rect(border_left - 5, border_top - 5,
                                          rows * blockSize + 10, columns * blockSize + 10), 3)
 # 1/2 are the left and top and 3/4 are the columns
 
@@ -266,7 +252,7 @@ def drawCell(x, y, color):
 def drawScore():
     font2 = font.SysFont('didot.ttc', 50)
     highScoreText = font2.render("High Score: %d" % highscore, True, ORANGE)
-    window.blit(highScoreText, (375, 75))
+    window.blit(highScoreText, (375, 55))
     # fist x second y
 
 
@@ -276,7 +262,7 @@ def changeScore():
         score += 1
     font1 = font.SysFont('didot.ttc', 50)
     scoreText = font1.render("Score: %d" % score, True, GREEN)
-    window.blit(scoreText, (140, 75))
+    window.blit(scoreText, (140, 55))
     # fist x second y
 
 
@@ -295,6 +281,18 @@ def checkFood():
         food_position_y = random.randint(0, rows - 1)
         if not (food_position_x, food_position_y) in body:
             break
+
+def drawKeys():
+    def keys(resource, width, height, x, y, text, textX, textY):
+        key = pygame.image.load(resource)
+        window.blit(pygame.transform.scale(key, (width, height)), (x, y))
+        font1 = font.SysFont('didot.ttc', 35)
+        kkey = font1.render(text, True, WHITE)
+        window.blit(kkey, (textX, textY))
+
+    keys(r"resources\img\pKey.png", 50, 50, 140, 632, ": pause", 190, 644)
+    keys(r"resources\img\cKey.png", 50, 50, 315, 632, ": restart", 365, 644)
+    keys(r"resources\img\nKey.png", 50, 50, 480, 632, ": quit", 540, 644)
 
 
 def reset():

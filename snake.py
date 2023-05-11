@@ -47,6 +47,7 @@ running = True
 isAlive = True
 isPaused = False
 gameStarted = False
+newHighScore = False
 
 start_screen = pygame.transform.scale(image.load(r"resources\img\titleScreen.jpg"), (WINDOW_WIDTH, WINDOW_HEIGHT))
 
@@ -120,11 +121,9 @@ def playButtonSound():
 
 
 def playHighscoreSound():
-    highscore = r""
+    highscore = r"resources\sound\highScore.wav"
     mixer.music.load(highscore)
     pygame.mixer.Channel(3).play(pygame.mixer.Sound(highscore))
-
-# todo new highscore sound
 
 
 class Direction(Enum):
@@ -138,7 +137,7 @@ direction = Direction.up
 
 
 def main():
-    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused, highscore, gameStarted
+    global window, food_position_x, food_position_y, running, isAlive, direction, isPaused, highscore, gameStarted, newHighScore
     pygame.init()
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Snake")
@@ -196,10 +195,16 @@ def main():
             drawFood(food_position_x, food_position_y)
             drawSnake()
             changeScore()
+
             if highscore < score:
+                if not newHighScore:
+                    playHighscoreSound()
+                    newHighScore = True
+
                 highscore += 1
                 with open("highscore.txt", "w") as file:
                     file.write(str(highscore))
+
             if not eatFood():
                 body.pop()
 
@@ -294,7 +299,7 @@ def checkFood():
 
 
 def reset():
-    global snake_position_x, snake_position_y, score, food_position_x, food_position_y, direction, body, isPaused
+    global snake_position_x, snake_position_y, score, food_position_x, food_position_y, direction, body, isPaused, newHighScore
     snake_position_x = int(rows / 2)
     snake_position_y = int(columns / 2)
     food_position_x = random.randint(0, rows - 1)
@@ -304,6 +309,7 @@ def reset():
     score = 0
     isPaused = False
     direction = Direction.up
+    newHighScore = False
 
 
 def gameOverScreen():

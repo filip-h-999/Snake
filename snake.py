@@ -91,18 +91,17 @@ class MoveSounds:
 
 
 def playEat():
-    eat = r"resources\sound\apple.mp3"
-    mixer.music.load(eat)
-    mixer.music.play()
+    eat = r"resources\sound\eat.wav"
+    pygame.mixer.Channel(2).play(pygame.mixer.Sound(eat))
 
 
 def playDead():
-    dead = r"resources\sound\dead.mp3"
+    dead = r"resources\sound\dead.wav"
     pygame.mixer.Channel(0).play(pygame.mixer.Sound(dead), maxtime=3000)
 
 
 def playGameOver():
-    gameOver = r"resources\sound\game Over.mp3"
+    gameOver = r"resources\sound\gameOver.wav"
     pygame.mixer.Channel(1).play(pygame.mixer.Sound(gameOver), maxtime=3000)
 
 

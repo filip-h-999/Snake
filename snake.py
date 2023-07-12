@@ -50,7 +50,7 @@ isPaused = False
 gameStarted = False
 newHighScore = False
 
-start_screen = pygame.transform.scale(image.load(r"resources\img\titleScreen.jpg"), (WINDOW_WIDTH, WINDOW_HEIGHT))
+start_screen = pygame.transform.scale(image.load(r"resources\img\titleScreen.png"), (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 
 class MoveSounds:
@@ -105,9 +105,9 @@ def playButtonSound():
 
 
 def playHighscoreSound():
-    highscore = r"resources\sound\highScore.wav"
-    mixer.music.load(highscore)
-    pygame.mixer.Channel(3).play(pygame.mixer.Sound(highscore))
+    highscoreSound = r"resources\sound\highScore.wav"
+    mixer.music.load(highscoreSound)
+    pygame.mixer.Channel(3).play(pygame.mixer.Sound(highscoreSound))
 
 
 class Direction(Enum):
@@ -151,6 +151,14 @@ def main():
                     gameStarted = True
                 elif event.key == pygame.K_n:
                     running = False
+                elif event.key == pygame.K_r:
+                    highscore = 0
+                    isAlive = True
+                    playButtonSound()
+                    reset()
+                    gameStarted = True
+                    with open("highscore.txt", "w") as file:
+                        file.write(str(highscore))
                 if event.key == pygame.K_p:
                     isPaused = not isPaused
 
